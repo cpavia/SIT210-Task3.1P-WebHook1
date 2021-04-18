@@ -1,0 +1,28 @@
+#include "Adafruit_DHT.h"
+
+DHT dht(D2, DHT11);
+
+void setup() {
+	Serial.begin(9600); 
+	Serial.println("DHT11 environment sensing");
+	dht.begin();
+}
+
+void loop() 
+{
+	delay(30000);
+	
+	float t = dht.getTempCelcius();
+
+	if (isnan(t)) {
+		Serial.println("Failed to read from DHT sensor!");
+		return;
+	}
+
+        const char * eventName = "room_temp";        
+        unsigned long myChannelNumber = 1361518;
+        const char * myWriteAPIKey = "FT3VFQD0JEIYBHQD";
+        Particle.publish(eventName, "{ \"temperature\": \"" + String(t) + "\", \"key\": \"" + myWriteAPIKey + "\" }", PRIVATE);  
+
+	delay(30000);
+}
